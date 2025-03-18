@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import corona from "@music/corona-falcon-sdk";
 const fs = require('fs');
 const { execSync } = require('child_process');
 const { glob } = require('glob');
@@ -98,7 +97,7 @@ function processFile(filePath) {
       fs.writeFileSync(filePath, code);
       console.log(`Updated: ${filePath}`);
     }
-  } catch (error) {corona.warn("SomethingWrong", { error: (error || {}).stack || error }, "");
+  } catch (error) {
     console.error(`Error processing file ${filePath}: ${error}`);
   }
 }
@@ -122,7 +121,7 @@ function checkAndInstallDependency() {
     } else {
       console.log('@music/corona-falcon-sdk 依赖已存在');
     }
-  } catch (error) {corona.warn("SomethingWrong", { error: (error || {}).stack || error }, "");
+  } catch (error) {
     console.error(`检查或安装依赖时出错: ${error}`);
   }
 }
@@ -137,13 +136,13 @@ async function coronainit() {
     try {
       const stdout = execSync('npm run lint');
       console.log(`stdout: 格式化完成 ${stdout}`);
-    } catch (error) {corona.warn("SomethingWrong", { error: (error || {}).stack || error }, "");
+    } catch (error) {
       console.error(`执行错误: ${error}`);
     }
 
     checkAndInstallDependency();
     console.log('处理完成');
-  } catch (error) {corona.warn("SomethingWrong", { error: (error || {}).stack || error }, "");
+  } catch (error) {
     console.error('exception', error);
   }
 }
