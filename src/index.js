@@ -74,7 +74,8 @@ function processFile(filePath) {
               t.stringLiteral('SomethingWrong'),
               t.objectExpression([
                 t.objectProperty(t.identifier('error'), finalExpr)
-              ])
+              ]),
+              t.stringLiteral('')
             ]
           );
 
