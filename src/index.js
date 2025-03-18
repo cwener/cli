@@ -149,10 +149,10 @@ async function handleGitOperations(gitUrl) {
   try {
     console.log('正在克隆仓库...');
     execSync(`git clone ${gitUrl} .`, { stdio: 'inherit' });
-    
+
     console.log('切换到 master 分支...');
     execSync('git checkout master', { stdio: 'inherit' });
-    
+
     console.log('创建并切换到 feature/coronaInit 分支...');
     execSync('git checkout -b feature/coronaInit', { stdio: 'inherit' });
     console.log('推送到远程仓库...');
@@ -168,29 +168,35 @@ async function handleGitOperations(gitUrl) {
  */
 async function coronainit(gitUrl) {
   try {
-    console.log('git url: ', gitUrl);
-    
-    await handleGitOperations(gitUrl);
+    if (gitUrl) {
+      console.error('请提供 Git 仓库地址');
+      console.log('git url: ', gitUrl);
 
-    console.log('安装项目依赖...');
-    try {
-      execSync('npm install', { stdio: 'inherit' });
-      console.log('安装项目依赖完成');
-    } catch (error) {
-      console.error('安装依赖时出错:', error, '请手动处理');
-      throw error;
+      await handleGitOperations(gitUrl);
+
+      console.log('安装项目依赖...');
+      try {
+        execSync('npm install', { stdio: 'inherit' });
+        console.log('安装项目依赖完成');
+      } catch (error) {
+        console.error('安装依赖时出错:', error, '请手动处理');
+        throw error;
+      }
     }
 
-    
+
+
     const files = glob.sync('src/**/*.{js,jsx,ts,tsx}');
     files.forEach(processFile);
     checkAndInstallDependency();
 
-    console.log('打开 VS Code...');
-    try {
-      execSync('code .', { stdio: 'inherit' });
-    } catch (error) {
-      console.error('打开 VS Code 时出错:', error);
+    if (gitUrl) {
+      console.log('打开 VS Code...');
+      try {
+        execSync('code .', { stdio: 'inherit' });
+      } catch (error) {
+        console.error('打开 VS Code 时出错:', error);
+      }
     }
 
     console.log('处理完成');
@@ -201,7 +207,7 @@ async function coronainit(gitUrl) {
 const program = new Command()
 console.log('program');
 program
-  .command('run <gitUrl>')
+  .command('run [gitUrl]>')
   .description('初始化')
   .action((gitUrl) => {
     console.log('gitUrl', gitUrl);
