@@ -1,6 +1,6 @@
 {
   "name": "@music/coronainit-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "dist/index.js",
   "bin": {
@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c && chmod +x dist/index.js",
-    "dev": "rollup -c -w"
+    "dev": "rollup -c -w",
+    "prepublishOnly": "rollup -c"
   },
   "keywords": [],
   "author": "",
