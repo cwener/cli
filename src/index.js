@@ -171,11 +171,28 @@ async function coronainit(gitUrl) {
     console.log('git url: ', gitUrl);
     
     await handleGitOperations(gitUrl);
+
+    console.log('安装项目依赖...');
+    try {
+      execSync('npm install', { stdio: 'inherit' });
+      console.log('安装项目依赖完成');
+    } catch (error) {
+      console.error('安装依赖时出错:', error, '请手动处理');
+      throw error;
+    }
+
     
     const files = glob.sync('src/**/*.{js,jsx,ts,tsx}');
     files.forEach(processFile);
-
     checkAndInstallDependency();
+
+    console.log('打开 VS Code...');
+    try {
+      execSync('code .', { stdio: 'inherit' });
+    } catch (error) {
+      console.error('打开 VS Code 时出错:', error);
+    }
+
     console.log('处理完成');
   } catch (error) {
     console.error('exception', error);
