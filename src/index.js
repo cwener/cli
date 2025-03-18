@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+import corona from "@music/corona-falcon-sdk";
 const fs = require('fs');
 const { execSync } = require('child_process');
 const { glob } = require('glob');
@@ -17,7 +17,7 @@ function processFile(filePath) {
     const code = fs.readFileSync(filePath, 'utf8');
     const ast = parse(code, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript'],
+      plugins: ['jsx', 'typescript']
     });
 
     let modified = false;
@@ -39,16 +39,16 @@ function processFile(filePath) {
         let hasCoronaLog = false;
         for (const statement of catchBody) {
           if (
-            statement.type === 'ExpressionStatement' &&
-            statement.expression.type === 'CallExpression'
-          ) {
+          statement.type === 'ExpressionStatement' &&
+          statement.expression.type === 'CallExpression')
+          {
             const { callee } = statement.expression;
             if (
-              callee.type === 'MemberExpression' &&
-              callee.object.type === 'Identifier' &&
-              callee.object.name === 'corona' &&
-              ['info', 'warn', 'error'].includes(callee.property.name)
-            ) {
+            callee.type === 'MemberExpression' &&
+            callee.object.type === 'Identifier' &&
+            callee.object.name === 'corona' &&
+            ['info', 'warn', 'error'].includes(callee.property.name))
+            {
               hasCoronaLog = true;
               break;
             }
@@ -71,12 +71,12 @@ function processFile(filePath) {
           const warnCall = t.callExpression(
             t.memberExpression(t.identifier('corona'), t.identifier('warn')),
             [
-              t.stringLiteral('SomethingWrong'),
-              t.objectExpression([
-                t.objectProperty(t.identifier('error'), finalExpr)
-              ]),
-              t.stringLiteral('')
-            ]
+            t.stringLiteral('SomethingWrong'),
+            t.objectExpression([
+            t.objectProperty(t.identifier('error'), finalExpr)]
+            ),
+            t.stringLiteral('')]
+
           );
 
           path.get('body').unshiftContainer('body', t.expressionStatement(warnCall));
@@ -98,7 +98,7 @@ function processFile(filePath) {
       fs.writeFileSync(filePath, code);
       console.log(`Updated: ${filePath}`);
     }
-  } catch (error) {
+  } catch (error) {corona.warn("SomethingWrong", { error: (error || {}).stack || error }, "");
     console.error(`Error processing file ${filePath}: ${error}`);
   }
 }
@@ -112,8 +112,8 @@ function checkAndInstallDependency() {
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
     const hasDependency =
-      (packageJson.dependencies && packageJson.dependencies['@music/corona-falcon-sdk']) ||
-      (packageJson.devDependencies && packageJson.devDependencies['@music/corona-falcon-sdk']);
+    packageJson.dependencies && packageJson.dependencies['@music/corona-falcon-sdk'] ||
+    packageJson.devDependencies && packageJson.devDependencies['@music/corona-falcon-sdk'];
 
     if (!hasDependency) {
       console.log('@music/corona-falcon-sdk 依赖未找到，正在安装...');
@@ -122,7 +122,7 @@ function checkAndInstallDependency() {
     } else {
       console.log('@music/corona-falcon-sdk 依赖已存在');
     }
-  } catch (error) {
+  } catch (error) {corona.warn("SomethingWrong", { error: (error || {}).stack || error }, "");
     console.error(`检查或安装依赖时出错: ${error}`);
   }
 }
@@ -137,13 +137,13 @@ async function coronainit() {
     try {
       const stdout = execSync('npm run lint');
       console.log(`stdout: 格式化完成 ${stdout}`);
-    } catch (error) {
+    } catch (error) {corona.warn("SomethingWrong", { error: (error || {}).stack || error }, "");
       console.error(`执行错误: ${error}`);
     }
 
     checkAndInstallDependency();
     console.log('处理完成');
-  } catch (error) {
+  } catch (error) {corona.warn("SomethingWrong", { error: (error || {}).stack || error }, "");
     console.error('exception', error);
   }
 }

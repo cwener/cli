@@ -2,12 +2,14 @@
   "name": "@music/coronainit-cli",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "bin": {
-    "coronainit": "./src/index.js"
+    "coronainit": "./dist/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c && chmod +x dist/index.js",
+    "dev": "rollup -c -w"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +19,14 @@
     "@babel/parser": "^7.26.10",
     "@babel/traverse": "^7.26.10",
     "@babel/types": "^7.26.10",
-    "@music/corona-falcon-sdk": "^0.4.0",
     "glob": "^11.0.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@babel/core": "^7.23.6",
+    "@babel/preset-env": "^7.23.6",
+    "rollup": "^4.9.1"
   }
 }
