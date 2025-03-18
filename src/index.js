@@ -106,7 +106,7 @@ function processFile(filePath) {
 
     // 保存修改
     if (modified) {
-      const { code } = generator(ast, { retainLines: true });
+      const { code } = generator(ast, { retainLines: false });
       fs.writeFileSync(filePath, code);
       console.log(`Updated: ${filePath}`);
     }
