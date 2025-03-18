@@ -130,13 +130,9 @@ function checkAndInstallDependency() {
  * 主函数
  */
 async function coronainit() {
-  console.log('1');
   try {
-    console.log('2');
     const files = glob.sync('src/**/*.{js,jsx,ts,tsx}');
-    console.log('3');
     files.forEach(processFile);
-    console.log('4');
     try {
       const stdout = execSync('npm run lint');
       console.log(`stdout: 格式化完成 ${stdout}`);
