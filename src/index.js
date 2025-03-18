@@ -147,12 +147,21 @@ function checkAndInstallDependency() {
  */
 async function handleGitOperations(gitUrl) {
   try {
+    // 从 git URL 提取仓库名
+    const repoName = gitUrl.split('/').pop().replace('.git', '');
+    
+    console.log(`创建文件夹: ${repoName}`);
+    fs.mkdirSync(repoName);
+    
     console.log('正在克隆仓库...');
-    execSync(`git clone ${gitUrl} .`, { stdio: 'inherit' });
-
+    execSync(`git clone ${gitUrl} ${repoName}`, { stdio: 'inherit' });
+    
+    // 切换工作目录到新创建的文件夹
+    process.chdir(repoName);
+    
     console.log('切换到 master 分支...');
     execSync('git checkout master', { stdio: 'inherit' });
-
+    
     console.log('创建并切换到 feature/coronaInit 分支...');
     execSync('git checkout -b feature/coronaInit', { stdio: 'inherit' });
     console.log('推送到远程仓库...');
