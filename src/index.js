@@ -6,6 +6,7 @@ const { parse } = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const generator = require('@babel/generator').default;
 const t = require('@babel/types');
+const { Command } = require('commander');
 
 /**
  * 处理单个文件
@@ -141,18 +142,38 @@ function checkAndInstallDependency() {
 }
 
 /**
+ * 处理 Git 操作
+ * @param {string} gitUrl - Git 仓库地址
+ */
+async function handleGitOperations(gitUrl) {
+  try {
+    console.log('正在克隆仓库...');
+    execSync(`git clone ${gitUrl} .`, { stdio: 'inherit' });
+    
+    console.log('切换到 master 分支...');
+    execSync('git checkout master', { stdio: 'inherit' });
+    
+    console.log('创建并切换到 feature/coronaInit 分支...');
+    execSync('git checkout -b feature/coronaInit', { stdio: 'inherit' });
+    console.log('推送到远程仓库...');
+    execSync('git push origin feature/coronaInit', { stdio: 'inherit' });
+  } catch (error) {
+    console.error('Git 操作失败:', error);
+    throw error;
+  }
+}
+
+/**
  * 主函数
  */
-async function coronainit() {
+async function coronainit(gitUrl) {
   try {
+    console.log('git url: ', gitUrl);
+    
+    await handleGitOperations(gitUrl);
+    
     const files = glob.sync('src/**/*.{js,jsx,ts,tsx}');
     files.forEach(processFile);
-    // try {
-    //   const stdout = execSync('npm run lint');
-    //   console.log(`stdout: 格式化完成 ${stdout}`);
-    // } catch (error) {
-    //   console.error(`执行错误: ${error}`);
-    // }
 
     checkAndInstallDependency();
     console.log('处理完成');
@@ -160,5 +181,15 @@ async function coronainit() {
     console.error('exception', error);
   }
 }
+const program = new Command()
+console.log('program');
+program
+  .command('run <gitUrl>')
+  .description('初始化')
+  .action((gitUrl) => {
+    console.log('gitUrl', gitUrl);
+    coronainit(gitUrl);
+  });
 
-coronainit();
+
+program.parse(process.argv)
