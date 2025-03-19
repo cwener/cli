@@ -37,22 +37,31 @@ function processFile(filePath) {
     traverse(ast, {
       CatchClause(path) {
         const catchParam = path.node.param;
-        if (!catchParam || catchParam.type !== 'Identifier') return;
 
-        const errorName = catchParam.name;
+        // 如果 catch 块没有参数，则添加一个参数 `error`
+        if (!catchParam) {
+          path.node.param = t.identifier('error');
+        }
+
+        // 确保 catch 参数是一个 Identifier
+        if (path.node.param.type !== 'Identifier') return;
+
+        const errorName = path.node.param.name;
         const catchBody = path.node.body.body;
 
         let hasCoronaLog = false;
         for (const statement of catchBody) {
           if (
             statement.type === 'ExpressionStatement' &&
-            statement.expression.type === 'CallExpression') {
+            statement.expression.type === 'CallExpression'
+          ) {
             const { callee } = statement.expression;
             if (
               callee.type === 'MemberExpression' &&
               callee.object.type === 'Identifier' &&
               callee.object.name === 'corona' &&
-              ['info', 'warn', 'error'].includes(callee.property.name)) {
+              ['info', 'warn', 'error'].includes(callee.property.name)
+            ) {
               hasCoronaLog = true;
               break;
             }
@@ -77,9 +86,10 @@ function processFile(filePath) {
             [
               t.stringLiteral('SomethingWrong'),
               t.objectExpression([
-                t.objectProperty(t.identifier('error'), finalExpr)]
-              ),
-              t.stringLiteral('')]
+                t.objectProperty(t.identifier('error'), finalExpr),
+              ]),
+              t.stringLiteral(''),
+            ]
           );
 
           path.get('body').unshiftContainer('body', t.expressionStatement(warnCall));
@@ -148,19 +158,19 @@ async function handleGitOperations(gitUrl) {
   try {
     // 从 git URL 提取仓库名
     const repoName = gitUrl.split('/').pop().replace('.git', '');
-    
+
     console.log(`创建文件夹: ${repoName}`);
     fs.mkdirSync(repoName);
-    
+
     console.log('正在克隆仓库...');
     execSync(`git clone ${gitUrl} ${repoName}`, { stdio: 'inherit' });
-    
+
     // 切换工作目录到新创建的文件夹
     process.chdir(repoName);
-    
+
     console.log('切换到 master 分支...');
     execSync('git checkout master', { stdio: 'inherit' });
-    
+
     console.log('创建并切换到 feature/coronaInit 分支...');
     execSync('git checkout -b feature/coronaInit', { stdio: 'inherit' });
     console.log('推送到远程仓库...');
@@ -214,5 +224,5 @@ async function coronainit(gitUrl) {
 }
 
 module.exports = {
-    coronainit
-  };
+  coronainit
+};
